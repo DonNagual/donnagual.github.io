@@ -17,13 +17,13 @@ function openAsteroidsGame() {
     const SHIP_INV_DUR = 3;             // Dauer der Unsichtbarkeit des Schiffes in Sekunden
     const FRICTION = 0.7;               // Weltraum Reibungskoeffizient (0 = keine Reibung, 1 = sehr viel Reibung)
     const TURN_SPEED  = 360;            // Drehgeschwindigkeit des Schiffs in Grad pro Sekunde
-    const LASER_MAX = 5;               // Maximale Anzahl von Lasern gleichzeitig auf dem Bildschirm
+    const LASER_MAX = 10;               // Maximale Anzahl von Lasern gleichzeitig auf dem Bildschirm
     const LASER_SPD = 500;              // Geschwindigkeit von Lasern in Pixel pro Sekunde
     const LASER_DIST = 0.6;             // Die maximale Entfernung, die der Laser zurücklegen kann, beträgt einen Bruchteil der Bildschirmbreite
     const LASER_EXPLODE_DUR = 0.1;      // Dauer der Lasersexplosion in Sekunden
     const ROIDS_NUM = 3;                // Anzahl der bei Start erzeugten Asteroiden
     const ROIDS_SIZE = 100;             // Größe der Start Asteroiden
-    const ROIDS_SPD = 100;               // Maximale Startgeschwindigkeit der Asteroiden in Pixel
+    const ROIDS_SPD = 100;              // Maximale Startgeschwindigkeit der Asteroiden in Pixel
     const ROIDS_VERT = 10;              // Durchschnittliche Anzahl von Scheitelpunkten auf jedem Asteroiden
     const ROIDS_JAG = 0.4;              // Asteroiden Zacken (0 = keine, 1 = viele)
     const ROIDS_PTS_LGE = 20;           // Punkte für große Asteroiden
@@ -31,6 +31,8 @@ function openAsteroidsGame() {
     const ROIDS_PTS_SML = 100;          // Punkte für kleine Asteroiden
     const TEXT_FADE_TIME = 2.5;         // Text einfeden über Zeit in Sekunden
     const TEXT_SIZE = 40;               // Text größe
+    const SOUND_ON = true;              // Schaltet Sound an oder aus
+    const MUSIC_ON = true;              // Schaltet Musik an oder aus
     const SHOW_BOUNDING = false;        // Kollisionsstreifen ein- oder ausblenden
     const SHOW_CENTER_DOT = false;      // Schiffsmittenpunkt ein- oder ausblenden
 
@@ -38,6 +40,16 @@ function openAsteroidsGame() {
     /** @type {HTMLCanvasElement} */
     let canv = document.getElementById("gameCanves");
     let ctx = canv.getContext("2d");
+
+    // set up sound effects
+    let fxExplode = new Sound("../sounds/explode.mp3");
+    let fxHit = new Sound("../sounds/hit.mp3", 5);
+    let fxLaser = new Sound("../sounds/laser.mp3", 5, 0.5);
+    let fxThrust = new Sound("../sounds/thrust.mp3", 5, 0.5);
+
+    // set up the music
+    let music = new Music("../sound/music-low.mp3", "../sound/music-high.mp3");
+    let roidsLeft, roidsTotal;
 
     // set up the game parameters
     let level, lives, roids, score, scoreHigh, ship, text, textAlpha;
@@ -52,6 +64,8 @@ function openAsteroidsGame() {
 
     function createAsteroidBelt() {
         roids = [];
+        roidsTotal = (ROIDS_NUM + level) * 7;
+        roidsLeft = roidsTotal;
         let x, y;
         for (let i = 0; i < ROIDS_NUM + level; i++) {
             do {
@@ -91,6 +105,11 @@ function openAsteroidsGame() {
 
         // destroy the asteroid
         roids.splice(index, 1);
+        fxHit.play();
+
+        // calculate the ratio of remaining asteroids to determine music tempo
+        roidsLeft--;
+        music.setAsteroidRatio(roidsLeft == 0 ? 1 : roidsLeft / roidsTotal);
 
         // new level when no more asteroids
         if (roids.length == 0) {
@@ -125,6 +144,7 @@ function openAsteroidsGame() {
 
     function explodeShip() {
         ship.explodeTime = Math.ceil(SHIP_EXPLODE_DUR * FPS);
+        fxExplode.play();
     }
 
     function gameOver() {
@@ -263,6 +283,7 @@ function openAsteroidsGame() {
     function shootLaser() {
         // create the laser object
         if (ship.canShoot && ship.lasers.length < LASER_MAX) {
+            
             ship.lasers.push({  // from the nose of the ship
                 x: ship.x + 4 / 3 * ship.r * Math.cos(ship.a),
                 y: ship.y - 4 / 3 * ship.r * Math.sin(ship.a),
@@ -271,16 +292,75 @@ function openAsteroidsGame() {
                 dist: 0,
                 explodeTime: 0
             });
+            fxLaser.play();
         }
 
         // prevent further shooting
         ship.canShoot = false;
     }
 
+    function Music(srcLow, srcHigh) {
+        this.soundLow = new Audio(srcLow);
+        this.soundHigh = new Audio(srcHigh);
+        this.low = true;
+        this.tempo = 1.0; // seconds per beat
+        this.beatTime = 0; // frames left until next beat
+
+        this.play = function() {
+            if (MUSIC_ON) {
+                if (this.low) {
+                    this.soundLow.play();
+                }
+                else {
+                    this.soundHigh.play();
+                }
+                this.low = !this.low;
+            }
+        }
+
+        this.setAsteroidRatio = function(ratio) {
+            this.tempo = 1.0 - 0.75 * (1.0 -ratio);
+        }
+
+        this.tick = function() {
+            if (this.beatTime == 0) {
+                this.play();
+                this.beatTime = Math.ceil(this.tempo * FPS);
+            }
+            else {
+                this.beatTime--;
+            }
+        }
+    }
+
+    function Sound(src, maxStreams = 1, vol = 1.0) {
+        this.streamNum = 0;
+        this.streams = [];
+        for (let i = 0; i < maxStreams; i++) {
+            this.streams.push(new Audio(src));
+            this.streams[i].volume = vol;
+        }
+
+        this.play = function() {
+            if (SOUND_ON) {
+                this.streamNum = (this.streamNum + 1) % maxStreams;
+                this.streams[this.streamNum].play();
+            }
+        }
+
+        this.stop = function() {
+            this.streams[this.streamNum].pause();
+            this.streams[this.streamNum].currentTime = 0;
+        }
+    }
+
 
     function update() {
         let blinkOn = ship.blinkNum % 2 == 0;
         let exploding = ship.explodeTime > 0;
+
+        // tick the music
+        music.tick();
 
         // draw space
         ctx.fillStyle = "black";
@@ -290,6 +370,7 @@ function openAsteroidsGame() {
         if (ship.thrusting && !ship.dead) {
             ship.thrust.x += SHIP_THRUST * Math.cos(ship.a) / FPS;
             ship.thrust.y -= SHIP_THRUST * Math.sin(ship.a) / FPS;
+            fxThrust.play();
         
             // draw the thruster
             if (!exploding && blinkOn) {
@@ -317,6 +398,7 @@ function openAsteroidsGame() {
         else {
             ship.thrust.x -= FRICTION * ship.thrust.x / FPS;
             ship.thrust.y -= FRICTION * ship.thrust.y / FPS;
+            fxThrust.stop();
         }
 
         // draw a triangular ship
