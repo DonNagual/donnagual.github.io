@@ -45,7 +45,7 @@ function openAsteroidsGame() {
     let fxExplode = new Sound("../sounds/explode.mp3");
     let fxHit = new Sound("../sounds/hit.mp3", 5);
     let fxLaser = new Sound("../sounds/laser.mp3", 5, 0.5);
-    let fxThrust = new Sound("../sounds/thrust.mp3", 5, 0.5);
+    let fxThrust = new Sound("../sounds/thrust.mp3");
 
     // set up the music
     let music = new Music("../sound/music-low.mp3", "../sound/music-high.mp3");
