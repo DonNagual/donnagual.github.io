@@ -48,7 +48,7 @@ function openAsteroidsGame() {
     let fxThrust = new Sound("../sounds/thrust.mp3");
 
     // set up the music
-    let music = new Music("../sound/music-low.mp3", "../sound/music-high.mp3");
+    let music = new Music("../sounds/musicLow.mp3", "../sounds/musicHigh.mp3");
     let roidsLeft, roidsTotal;
 
     // set up the game parameters
@@ -319,7 +319,7 @@ function openAsteroidsGame() {
         }
 
         this.setAsteroidRatio = function(ratio) {
-            this.tempo = 1.0 - 0.75 * (1.0 -ratio);
+            this.tempo = 1.0 - 0.75 * (1.0 - ratio);
         }
 
         this.tick = function() {
