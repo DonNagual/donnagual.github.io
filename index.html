@@ -4,68 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Startseite</title>
-    <link href="/css/stylesheet.css" rel="stylesheet">
+    <link href="/css/base.css" rel="stylesheet">
     <link href="/css/media.css" rel="stylesheet">
-    <script src="/javascript/funktionen.js"></script>
 </head>
 
 <body id="fadeBody" onload="fadeIn()">
     <header onmouseover="showNav()" onmouseout="hideNav()">
-        <div id="banner">            
-            <h1>
-                <a href="index.html"><h1>Don Nagual</h1></a>
-            </h1>
+        <div>
+            <a href="../index.html"><h1>Don Nagual</h1></a>
         </div>
-        <div class="bar">
-            <nav id="navBar" onmouseover="showNav()" onmouseout="hideNav()">
-                <a href="#">Über mich</a>
-                <div>
-                    <a href="#" onmouseover="showdropGalerie()" onmouseout="hidedropGalerie()">Galerie</a>
-                    <div id="dropGalerie" onmouseover="showdropGalerie()" onmouseout="hidedropGalerie()">
-                        <a href="#">Oumuamua</a>
-                        <a href="#">Java Graphic Flow</a>
-                        <a href="#">Web Games</a>
-                    </div>
-                </div>
-                <div>
-                    <a href="#" onmouseover="showdropProjekt()" onmouseout="hidedropProjekt()">Projekte</a>
-                    <div id="dropProjekt" onmouseover="showdropProjekt()" onmouseout="hidedropProjekt()">
-                        <a href="#">Oumuamua</a>
-                        <a href="#">Java Graphic Flow</a>
-                        <a href="/html/asteroid.html" onclick="bgWebgame()">Web Games</a>
-                    </div>
-                </div>
-                <a href="#" onclick="bgKontakte()">Kontakt</a>
-            </nav>
-        </div> 
+        <nav id="navBar" onmouseover="showNav()" onmouseout="hideNav()">
+            <button>Über mich</button>
+            <button>Galerie</button>
+            <button>ToDo</button>
+            <button>Projekte</button>
+            <button>Kontakt</button>
+        </nav>
     </header>
      
     <main id="bgImage">
-        <div id="clickText">
-            <button id="clickButton" onclick="bye()">DO NOT CLICK!!!</button>
-        </div>
-        <div id="clickText1">
-            <button id="clickButton" onclick="bye()">DON´T PANIC!</button>
-        </div>
+        
     </main>
         
-    <aside>
-        <button class="sozialBtn" onclick="mediaFunction()">
+    <aside onmouseover="mediaFunction()" onmouseout="mediaFunction()">
+        <button>
             <img src="/image/media1.png" alt="^">
         </button>
         <div id="mediaDiv">
-            <img class="sozialLogo" src="/image/discord_logo.png">
-            <img class="sozialLogo" src="/image/youtube_logo.png">
-            <img class="sozialLogo" src="/image/instagram_logo.png">
-            <img class="sozialLogo" src="/image/linkedin_logo.png">
+            <a href=""><img class="sozialLogo" src="/image/discord_logo.png"></a>
+            <a href=""><img class="sozialLogo" src="/image/youtube_logo.png"></a>
+            <a href=""><img class="sozialLogo" src="/image/instagram_logo.png"></a>
+            <a href=""><img class="sozialLogo" src="/image/linkedin_logo.png"></a>
         </div>
     </aside>
 
     <footer>
-        <div class="footdiv">
+        <div class="footerDiv">
             <div> &copy; COPYRIGHT</div>
-            <div> VERSION 0.0.1</div>
+            <div> VERSION 0.0.2</div>
         </div>
     </footer>
 </body>
+
+<script src="/javascript/funktionen.js"></script>
+
 </html>
