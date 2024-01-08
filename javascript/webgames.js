@@ -81,3 +81,14 @@ function windowScreen() {
     document.getElementById("btnBack").style.top = "14%";
     document.getElementById("btnWindowScreen").style.display = "none";
 }
+
+// function fullScreen(element) {
+//     if(element.requestFullscreen) {
+//       element.requestFullscreen();
+//     } else if(element.msRequestFullscreen) {      // for IE11 (remove June 15, 2022)
+//       element.msRequestFullscreen();
+//     } else if(element.webkitRequestFullscreen) {  // iOS Safari
+//       element.webkitRequestFullscreen();
+//     }
+//   }
+// fullScreen(document.documentElement);
